@@ -11,6 +11,21 @@
 |
 */
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('welcome');
+});*/
+
+Route::get('/', 'HomeController@index');
+
+Route::auth();
+
+Route::get('/home', 'HomeController@index');
+
+Route::group(['middleware' => 'auth', 'namespace' => 'Admin', 'prefix' => 'admin'], function() {
+    Route::get('/', 'HomeController@index');
+    Route::resource('article', 'ArticleController');
 });
+
+Route::get('article/{id}', 'ArticleController@show');
+
+Route::post('comment', 'CommentController@store');
