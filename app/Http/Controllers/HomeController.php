@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests;
-use Barryvdh\Debugbar\Middleware\Debugbar;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -25,7 +24,6 @@ class HomeController extends Controller
      */
     public function index()
     {
-        Debugbar::error('Error!');
         return view('home')->withArticles(\App\Article::all());
     }
 }

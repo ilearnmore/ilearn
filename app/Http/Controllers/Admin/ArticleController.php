@@ -8,6 +8,7 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Article;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class ArticleController extends Controller
@@ -15,24 +16,8 @@ class ArticleController extends Controller
     //
     public function index(Request $request)
     {
-        
-        if ($request->ajax()) {
-            $order_name = Input::get("sidx")?Input::get("sidx"):'id';
-            $rows =Input::get("rows");
-            $offset = (Input::get("page") - 1) * Input::get("rows");
-            $artcle = Article::orderBy($order_name, Input::get("sort",'desc'))->take($rows)->offset($offset)->get();
-            $all_count = Article::count();
-            $re_data = [
-                    'total' => ceil($all_count/$rows),
-                    'page' => Input::get("page",1),
-                    'records' => $all_count,
-                    'userdata' => [],
-                    'rows' => $artcle->jsonSerialize()
-                ];
-            return response()->json($re_data);
-        } else {
-            return view('admin/article/index')->withArticles(Article::all());
-        }
+        $articles = Article::paginate(config('params.pageRows'));
+        return view('admin/article/index',['articles' => $articles]);
     }
 
     public function create()
