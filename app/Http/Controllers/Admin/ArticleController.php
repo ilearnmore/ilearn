@@ -8,13 +8,16 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Article;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Input;
 
 class ArticleController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin/article/index')->withArticles(Article::all());
+        $articles = Article::paginate(config('params.pageRows'));
+        return view('admin/article/index',['articles' => $articles]);
     }
 
     public function create()
@@ -45,5 +48,10 @@ class ArticleController extends Controller
     {
         Article::find($id)->delete();
         return redirect()->back()->withInput()->withErrors('删除成功！');
+    }
+
+    public function show()
+    {
+        echo 'this show';
     }
 }
