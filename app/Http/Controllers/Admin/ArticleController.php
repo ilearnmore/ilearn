@@ -8,13 +8,31 @@ use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
 use App\Article;
+use Illuminate\Support\Facades\Input;
 
 class ArticleController extends Controller
 {
     //
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin/article/index')->withArticles(Article::all());
+        
+        if ($request->ajax()) {
+            $order_name = Input::get("sidx")?Input::get("sidx"):'id';
+            $rows =Input::get("rows");
+            $offset = (Input::get("page") - 1) * Input::get("rows");
+            $artcle = Article::orderBy($order_name, Input::get("sort",'desc'))->take($rows)->offset($offset)->get();
+            $all_count = Article::count();
+            $re_data = [
+                    'total' => ceil($all_count/$rows),
+                    'page' => Input::get("page",1),
+                    'records' => $all_count,
+                    'userdata' => [],
+                    'rows' => $artcle->jsonSerialize()
+                ];
+            return response()->json($re_data);
+        } else {
+            return view('admin/article/index')->withArticles(Article::all());
+        }
     }
 
     public function create()
@@ -45,5 +63,10 @@ class ArticleController extends Controller
     {
         Article::find($id)->delete();
         return redirect()->back()->withInput()->withErrors('删除成功！');
+    }
+
+    public function show()
+    {
+        echo 'this show';
     }
 }
